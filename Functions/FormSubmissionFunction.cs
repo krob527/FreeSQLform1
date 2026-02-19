@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using FormDataFunction.Models;
 using FormDataFunction.Services;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace FormDataFunction.Functions;
@@ -66,8 +67,9 @@ public class FormSubmissionFunction
                 return new BadRequestObjectResult(new { error = "All fields (Name, Email, Message) are required." });
             }
 
-            // Basic email validation
-            if (!submission.Email.Contains("@") || !submission.Email.Contains("."))
+            // Validate email format using proper validation
+            var emailValidator = new EmailAddressAttribute();
+            if (!emailValidator.IsValid(submission.Email))
             {
                 _logger.LogWarning("Invalid email format: {Email}", submission.Email);
                 return new BadRequestObjectResult(new { error = "Invalid email format." });

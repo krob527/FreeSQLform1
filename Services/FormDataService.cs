@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using System.Data;
 using FormDataFunction.Models;
 
 namespace FormDataFunction.Services;
@@ -24,10 +25,10 @@ public class FormDataService
                 VALUES (@Name, @Email, @Message, @SubmittedAt)";
 
             using var command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@Name", submission.Name ?? string.Empty);
-            command.Parameters.AddWithValue("@Email", submission.Email ?? string.Empty);
-            command.Parameters.AddWithValue("@Message", submission.Message ?? string.Empty);
-            command.Parameters.AddWithValue("@SubmittedAt", submission.SubmittedAt);
+            command.Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = submission.Name ?? string.Empty;
+            command.Parameters.Add("@Email", SqlDbType.NVarChar, 255).Value = submission.Email ?? string.Empty;
+            command.Parameters.Add("@Message", SqlDbType.NVarChar, -1).Value = submission.Message ?? string.Empty;
+            command.Parameters.Add("@SubmittedAt", SqlDbType.DateTime).Value = submission.SubmittedAt;
 
             await command.ExecuteNonQueryAsync();
             return true;
