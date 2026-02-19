@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Form Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .description {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 30px;
+        }
+        .iframe-container {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fff;
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            min-height: 500px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Embedded Form Example</h1>
+    
+    <div class="description">
+        <p><strong>This is an example of embedding the form in an iframe.</strong></p>
+        <p>The form below is loaded from <code>sample-form.html</code> using an iframe. This demonstrates how the form can be embedded in any website.</p>
+        <p><strong>Note:</strong> Update the form's fetch URL in <code>sample-form.html</code> to point to your deployed Azure Function endpoint before using in production.</p>
+    </div>
+    
+    <div class="iframe-container">
+        <iframe src="sample-form.html" title="Contact Form"></iframe>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107;">
+        <h3>For Production Use:</h3>
+        <ol>
+            <li>Deploy your Azure Function to Azure</li>
+            <li>Update the fetch URL in <code>sample-form.html</code> to your Azure Function URL</li>
+            <li>Host <code>sample-form.html</code> on your web server</li>
+            <li>Embed it in your website using an iframe like this:</li>
+        </ol>
+        <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>&lt;iframe src="https://your-domain.com/sample-form.html" width="600" height="500"&gt;&lt;/iframe&gt;</code></pre>
+    </div>
+</body>
+</html>
