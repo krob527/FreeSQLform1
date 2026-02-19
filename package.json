@@ -1,0 +1,16 @@
+{
+  "name": "freesql-contact-form",
+  "version": "1.0.0",
+  "description": "Azure Functions contact form with Azure SQL backend",
+  "scripts": {
+    "start": "func start",
+    "build": "echo no build step required"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0",
+    "@azure/identity": "^3.4.0",
+    "mssql": "^11.0.1",
+    "tedious": "^18.6.1"
+  },
+  "main": "src/functions/*.js"
+}

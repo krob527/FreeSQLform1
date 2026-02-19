@@ -1,0 +1,14 @@
+node_modules/
+local.settings.json
+.deploy/
+*.user
+*.vs*
+deploy.zip
+_deploy_tmp/
+*.log
+.env
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/*.code-workspace
