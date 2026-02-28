@@ -54,3 +54,16 @@ ALTER ROLE db_datawriter ADD MEMBER [knraiclass];
   style="border:none; display:block;"
 ></iframe>
 ```
+
+## Performance — cold start optimizations
+
+Azure Functions on the Consumption plan shuts down after ~5 minutes of inactivity. Without mitigation this causes 30–45 second delays on the first request after idle. Three changes address this:
+
+### 1. Keep-warm timer (`src/functions/keepWarm.js`)
+A timer trigger fires every 4 minutes to keep the function app from going idle. This is the primary fix for slow first loads. Cost: ~10,800 executions/month, well within the free tier's 1 million execution limit.
+
+### 2. Lazy-loaded heavy modules (`submitForm.js`)
+`mssql`, `tedious`, and `@azure/identity` are large packages. Previously they were loaded at startup for all functions, making even the lightweight `contactForm` wait for them. They are now deferred and only loaded when `submitForm` is first invoked.
+
+### 3. Faster credential resolution on Azure (`submitForm.js`)
+`DefaultAzureCredential` probes multiple credential providers sequentially on every cold start. When running on Azure with a managed identity, `ManagedIdentityCredential` is used directly instead (detected via the `IDENTITY_ENDPOINT` environment variable), skipping unnecessary probing. `DefaultAzureCredential` is still used locally for development.

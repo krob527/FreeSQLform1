@@ -1,9 +1,31 @@
 const { app } = require('@azure/functions');
-const sql = require('mssql');
-const { DefaultAzureCredential } = require('@azure/identity');
 
-// Credential is reused across invocations; it handles token caching + refresh internally
-const credential = new DefaultAzureCredential();
+// Heavy modules are lazy-loaded on first use so they don't slow down cold starts
+// for other functions (e.g. contactForm) that don't need them.
+let _sql = null;
+let _credential = null;
+
+function getSql() {
+  if (!_sql) _sql = require('mssql');
+  return _sql;
+}
+
+function getCredential() {
+  if (!_credential) {
+    // On Azure, IDENTITY_ENDPOINT is set when a managed identity is configured.
+    // ManagedIdentityCredential is much faster than DefaultAzureCredential because
+    // it goes directly to the IMDS endpoint instead of probing multiple providers.
+    if (process.env.IDENTITY_ENDPOINT) {
+      const { ManagedIdentityCredential } = require('@azure/identity');
+      _credential = new ManagedIdentityCredential();
+    } else {
+      // Local development fallback (uses Azure CLI / VS Code credentials, etc.)
+      const { DefaultAzureCredential } = require('@azure/identity');
+      _credential = new DefaultAzureCredential();
+    }
+  }
+  return _credential;
+}
 
 // Pool is cached but rebuilt whenever the access token has expired
 let pool = null;
@@ -23,6 +45,9 @@ async function getPool() {
     if (!server || !database) {
       throw new Error('SQL_SERVER and SQL_DATABASE environment variables must be set.');
     }
+
+    const sql = getSql();
+    const credential = getCredential();
 
     // Acquire an Entra access token for Azure SQL
     const tokenResponse = await credential.getToken('https://database.windows.net/.default');
@@ -116,6 +141,7 @@ app.http('submitForm', {
     const b = (v) => v ? 1 : 0; // coerce to BIT-safe 0/1
 
     try {
+      const sql = getSql();
       const db = await getPool();
 
       await db.request()
